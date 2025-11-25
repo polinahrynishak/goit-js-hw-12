@@ -17,8 +17,13 @@ export const createGalleryCardTemplate = images => {
 
 export function createGallery(images, galleryEl) {
   const markup = images.map(image => createGalleryCardTemplate(image)).join('');
-
   galleryEl.innerHTML = markup;
+  lightbox.refresh();
+}
+
+export function appendToGallery(images, galleryEl) {
+  const markup = images.map(createGalleryCardTemplate).join('');
+  galleryEl.insertAdjacentHTML('beforeend', markup);
   lightbox.refresh();
 }
 
@@ -32,4 +37,12 @@ export function showLoader(loaderEl) {
 
 export function hideLoader(loaderEl) {
   loaderEl.classList.add('hidden');
+}
+
+export function showLoadMoreButton(loadmoreBtn) {
+  loadmoreBtn.classList.remove('hidden');
+}
+
+export function hideLoadMoreButton(loadmoreBtn) {
+  loadmoreBtn.classList.add('hidden');
 }

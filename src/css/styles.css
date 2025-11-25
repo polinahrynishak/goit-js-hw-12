@@ -152,3 +152,12 @@ span {
   letter-spacing: 0.04em;
   color: #2e2f42;
 }
+
+.loadmore-btn {
+  margin: 10px auto 5px auto;
+  width: auto;
+}
+
+.loadmore-btn.hidden {
+  display: none;
+}
