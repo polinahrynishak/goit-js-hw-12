@@ -10,7 +10,6 @@ import {
   hideLoader,
   showLoadMoreButton,
   hideLoadMoreButton,
-  initLightbox,
 } from './js/render-functions';
 
 export const refs = {
@@ -63,8 +62,6 @@ const onSearchFormSubmit = async event => {
 
     createGallery(images, refs.gallery);
 
-    initLightbox();
-
     galleryCardHeight = refs.gallery
       .querySelector('li')
       .getBoundingClientRect().height;
@@ -88,27 +85,32 @@ const onSearchFormSubmit = async event => {
 const onLoadmoreBtnClick = async event => {
   try {
     page++;
+    hideLoadMoreButton(refs.loadmoreBtn);
     showLoader(refs.loader);
 
     const data = await getImagesByQuery(q, page);
     const images = data.hits;
-    appendToGallery(images, refs.gallery);
 
-    scrollBy({
-      top: galleryCardHeight * 2,
-      behavior: 'smooth',
-    });
+    if (images.length > 0) {
+      appendToGallery(images, refs.gallery);
 
-    const totalPages = Math.ceil(data.totalHits / PER_PAGE);
-
-    if (page >= totalPages) {
-      hideLoadMoreButton(refs.loadmoreBtn);
-      iziToast.info({
-        message:
-          'We are sorry, but you have reached the end of search results.',
-        position: 'topRight',
-        backgroundColor: 'green',
+      scrollBy({
+        top: galleryCardHeight * 2,
+        behavior: 'smooth',
       });
+
+      const totalPages = Math.ceil(data.totalHits / PER_PAGE);
+
+      if (page < totalPages) {
+        showLoadMoreButton(refs.loadmoreBtn);
+      } else {
+        iziToast.info({
+          message:
+            'We are sorry, but you have reached the end of search results.',
+          position: 'topRight',
+          backgroundColor: 'green',
+        });
+      }
     }
   } catch (error) {
     console.log(error);

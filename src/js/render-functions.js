@@ -3,12 +3,10 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 let lightbox = null;
 
-export function initLightbox() {
-  lightbox = new SimpleLightbox('.gallery a');
-}
-
-export function refreshLightbox() {
-  if (lightbox) {
+function initOrRefreshLightbox() {
+  if (!lightbox) {
+    lightbox = new SimpleLightbox('.gallery a');
+  } else {
     lightbox.refresh();
   }
 }
@@ -28,13 +26,13 @@ export const createGalleryCardTemplate = images => {
 export function createGallery(images, galleryEl) {
   const markup = images.map(image => createGalleryCardTemplate(image)).join('');
   galleryEl.innerHTML = markup;
-  refreshLightbox();
+  initOrRefreshLightbox();
 }
 
 export function appendToGallery(images, galleryEl) {
   const markup = images.map(createGalleryCardTemplate).join('');
   galleryEl.insertAdjacentHTML('beforeend', markup);
-  refreshLightbox();
+  initOrRefreshLightbox();
 }
 
 export function clearGallery(galleryEl) {
