@@ -3,15 +3,22 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 let lightbox = null;
 
-export function initLightbox() {
-  lightbox = new SimpleLightbox('.gallery a');
-}
+const initLightbox = () => {
+  if (lightbox) {
+    lightbox.destroy();
+  }
 
-export function refreshLightbox() {
+  lightbox = new SimpleLightbox('.gallery a');
+};
+
+const refreshLightbox = () => {
   if (lightbox) {
     lightbox.refresh();
+    return;
   }
-}
+
+  initLightbox();
+};
 
 export const createGalleryCardTemplate = images => {
   return `<li class="gallery-card">
@@ -28,7 +35,7 @@ export const createGalleryCardTemplate = images => {
 export function createGallery(images, galleryEl) {
   const markup = images.map(image => createGalleryCardTemplate(image)).join('');
   galleryEl.innerHTML = markup;
-  refreshLightbox();
+  initLightbox();
 }
 
 export function appendToGallery(images, galleryEl) {

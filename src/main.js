@@ -10,7 +10,6 @@ import {
   hideLoader,
   showLoadMoreButton,
   hideLoadMoreButton,
-  initLightbox,
 } from './js/render-functions';
 
 export const refs = {
@@ -63,8 +62,6 @@ const onSearchFormSubmit = async event => {
 
     createGallery(images, refs.gallery);
 
-    initLightbox();
-
     galleryCardHeight = refs.gallery
       .querySelector('li')
       .getBoundingClientRect().height;
@@ -88,6 +85,7 @@ const onSearchFormSubmit = async event => {
 const onLoadmoreBtnClick = async event => {
   try {
     page++;
+    hideLoadMoreButton(refs.loadmoreBtn);
     showLoader(refs.loader);
 
     const data = await getImagesByQuery(q, page);
@@ -101,15 +99,17 @@ const onLoadmoreBtnClick = async event => {
 
     const totalPages = Math.ceil(data.totalHits / PER_PAGE);
 
-    if (page >= totalPages) {
-      hideLoadMoreButton(refs.loadmoreBtn);
+    if (page >= totalPages || images.length === 0) {
       iziToast.info({
         message:
           'We are sorry, but you have reached the end of search results.',
         position: 'topRight',
         backgroundColor: 'green',
       });
+      return;
     }
+
+    showLoadMoreButton(refs.loadmoreBtn);
   } catch (error) {
     console.log(error);
   } finally {
