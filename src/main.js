@@ -10,6 +10,7 @@ import {
   hideLoader,
   showLoadMoreButton,
   hideLoadMoreButton,
+  initLightbox,
 } from './js/render-functions';
 
 export const refs = {
@@ -18,6 +19,8 @@ export const refs = {
   loader: document.querySelector('.loader'),
   loadmoreBtn: document.querySelector('.loadmore-btn'),
 };
+
+const PER_PAGE = 15;
 
 let page = 1;
 let q = null;
@@ -56,20 +59,19 @@ const onSearchFormSubmit = async event => {
       return;
     }
 
-    const totalPages = Math.ceil(data.totalHits / 15);
-
-    if (totalPages > 1) {
-      showLoadMoreButton(refs.loadmoreBtn);
-      refs.loadmoreBtn.addEventListener('click', onLoadmoreBtnClick);
-    }
+    const totalPages = Math.ceil(data.totalHits / PER_PAGE);
 
     createGallery(images, refs.gallery);
+
+    initLightbox();
 
     galleryCardHeight = refs.gallery
       .querySelector('li')
       .getBoundingClientRect().height;
 
-    showLoadMoreButton(refs.loadmoreBtn);
+    if (totalPages > 1) {
+      showLoadMoreButton(refs.loadmoreBtn);
+    }
 
     searchForm.elements['search-text'].value = '';
   } catch (error) {
@@ -78,7 +80,6 @@ const onSearchFormSubmit = async event => {
       position: 'topRight',
       backgroundColor: 'red',
     });
-    console.log(error);
   } finally {
     hideLoader(refs.loader);
   }
@@ -91,7 +92,6 @@ const onLoadmoreBtnClick = async event => {
 
     const data = await getImagesByQuery(q, page);
     const images = data.hits;
-
     appendToGallery(images, refs.gallery);
 
     scrollBy({
@@ -99,12 +99,11 @@ const onLoadmoreBtnClick = async event => {
       behavior: 'smooth',
     });
 
-    const totalPages = Math.ceil(data.totalHits / 15);
+    const totalPages = Math.ceil(data.totalHits / PER_PAGE);
 
     if (page >= totalPages) {
       hideLoadMoreButton(refs.loadmoreBtn);
-      refs.loadmoreBtn.removeEventListener('click', onLoadmoreBtnClick);
-      iziToast.error({
+      iziToast.info({
         message:
           'We are sorry, but you have reached the end of search results.',
         position: 'topRight',
@@ -119,3 +118,4 @@ const onLoadmoreBtnClick = async event => {
 };
 
 refs.searchForm.addEventListener('submit', onSearchFormSubmit);
+refs.loadmoreBtn.addEventListener('click', onLoadmoreBtnClick);
